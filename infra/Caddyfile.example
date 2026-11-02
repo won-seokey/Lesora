@@ -1,0 +1,5 @@
+# Future private multi-PC test: requires domain, TLS and explicit exposure decision.
+# Do not expose the PoC operator-key interface to the public Internet.
+classroom.example.com {
+    reverse_proxy web:3000
+}

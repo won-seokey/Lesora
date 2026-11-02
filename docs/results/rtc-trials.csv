@@ -1,0 +1,3 @@
+trial_id,status,provider,sdk_version,os,browser_version,cpu,ram_gb,teacher_student_ratio,network_profile,duration_minutes,join_attempts,join_successes,join_p95_ms,audio_gap_max_ms,audio_gap_total_ms,reconnect_ms,cpu_mean_percent,cpu_peak_percent,ram_peak_mb,rendered_cameras,received_resolution,share_readability,recording_status,recording_gap_ms,evidence,notes
+baseline-zoom,NOT_RUN,zoom,2.6.0,,,,,,,,,,,,,,,,,,,,NOT_RUN,,,
+baseline-livekit,NOT_RUN,livekit,2.23.0,,,,,,,,,,,,,,,,,,,,NOT_RUN,,,
