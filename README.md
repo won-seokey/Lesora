@@ -7,9 +7,9 @@
 - 공개 저장소: [won-seokey/Lesora](https://github.com/won-seokey/Lesora)
 - 원격 이름: `origin`
 - 원격 URL: `https://github.com/won-seokey/Lesora.git`
-- 로컬 초기 브랜치: `main`
+- 기본 브랜치: `main` / 초기 구현 PR 브랜치: `feat/phase0-bootstrap`
 
-2026-11-02 로컬 Git 초기화와 `origin` 등록을 완료했다. `won-seokey` 계정의 GitHub 인증 및 저장소 ADMIN 권한, 원격 조회 성공을 확인했다. 초기 구현 브랜치는 `feat/phase0-bootstrap`이다. 앞으로 작업과 검증 후 기능별 브랜치에 자동 commit/push하며, `main` 병합·force push·브랜치 삭제는 별도 승인을 받는다. [프로젝트 작업 지침](AGENTS.md)에 이 정책을 기록했다. [연결 및 업로드 절차](docs/development.md#github-저장소-연결과-업로드)를 따른다.
+2026-11-02 `main`을 기본 브랜치로 설정하고 PR·필수 CI·대화 해결을 요구하는 보호 규칙을 적용했다. 최신 `main` → 기능 브랜치 → PR → 리뷰·검증 → 사용자 승인 → squash merge 순서로 작업한다. 작업 후 commit/push/PR 생성은 자동으로 수행하며 `main` 병합·force push·브랜치 삭제는 별도 승인 대상이다. [브랜치 전략](docs/branching.md)과 [프로젝트 지침](AGENTS.md)을 따른다.
 
 현재는 **Phase 0 RTC 비교 PoC 착수 상태**다. Next.js/Express 구조, 서버 토큰 발급, Zoom/LiveKit 브라우저 어댑터와 검증 화면을 작성했다. 최종 RTC는 미선정이다. 실제 사용자 인증·DB 저장·채팅·자동 녹화·다시보기는 아직 구현되지 않았다.
 

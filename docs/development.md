@@ -4,36 +4,35 @@
 
 프로젝트 공개 저장소는 [won-seokey/Lesora](https://github.com/won-seokey/Lesora)이며 HTTPS 원격 주소는 `https://github.com/won-seokey/Lesora.git`다. 앞으로 이 저장소를 `origin`으로 사용한다.
 
-**연결 상태 (2026-11-02):** 권한 변경 및 GitHub 로그인 후 `git init -b main`과 `origin` 등록을 완료했다. GitHub CLI에서 `won-seokey` 계정의 keyring 인증과 HTTPS 사용을 확인했고, 공개 저장소 `won-seokey/Lesora`에 ADMIN 권한이 있다. `git ls-remote origin`은 성공했으며 원격 refs는 아직 없다. `.env`의 Git 추적 제외도 확인했다. 초기 구현을 보관하는 기능 브랜치는 `feat/phase0-bootstrap`이다. `main` 병합은 별도 승인 대상이다.
+**연결 상태 (2026-11-02):** `origin` 연결, `won-seokey` 인증, 기능 브랜치 최초 push를 확인했다. 기본 브랜치는 `main`이며 PR과 필수 CI `check`, 최신 main 반영, 리뷰 대화 해결을 요구하는 보호 규칙을 적용했다. 초기 구현은 `feat/phase0-bootstrap` PR에서 검토한다.
 
-아래는 새 로컬 폴더에서 최초 연결할 때 사용하는 명령이다. 현재 작업 폴더는 이미 연결했으므로 다시 실행할 필요가 없다.
+이후 개발 환경은 다음과 같이 시작한다. 현재 작업 폴더는 이미 연결되어 있으므로 clone을 다시 실행하지 않는다.
 
 ```sh
-cd /Users/wonseokey/Desktop/jobs/project/Lesora
-git init -b main
-git remote add origin https://github.com/won-seokey/Lesora.git
-git remote -v
-git ls-remote origin
+# 새 PC에서 최초 설정할 때만
+git clone https://github.com/won-seokey/Lesora.git
+cd Lesora
+# 새 작업을 시작할 때: 작업 트리가 깨끗한지 먼저 확인
+git status --short
+git fetch origin
+git switch -c feat/<작업명> origin/main
 ```
 
-이미 Git 초기화나 원격 등록을 마쳤다면 먼저 `git status`와 `git remote -v`로 확인하고 같은 설정을 중복 추가하지 않는다. 원격에 기존 커밋이 있으면 `git fetch origin`으로 내용을 확인하고 로컬 이력과 통합한 뒤 업로드한다. 기존 원격 이력을 강제로 덮어쓰지 않는다.
-
-공개 저장소이므로 업로드 전 `.env`와 실제 SDK credential, 개인정보, 시험 녹화/로그가 포함되지 않았는지 확인한다. 현재 `.gitignore`는 `.env`, `.env.*`, `node_modules`, 빌드 결과, npm 캐시를 제외하며 `.env.example`만 포함한다. 2026-11-02 사용자 승인에 따라 작업과 검증 후 기능별 브랜치에 자동 commit/push한다. 기존의 별도 commit/push 요청 조건은 이 정책으로 대체한다. `main` 병합·force push·브랜치 삭제는 별도 승인을 받는다. 상세 규칙은 [AGENTS.md](../AGENTS.md)를 따른다.
+작업·검증 후 비밀정보를 제외하고 자동 commit/push하며 `main` 대상 PR을 생성한다. 스테이징 파일과 diff를 확인하고 `.env` 등 인증정보가 포함되지 않게 한다.
 
 ```sh
-# 추적 제외와 업로드 후보 확인
 git check-ignore .env
-git status --short --untracked-files=all
-# 기능별 브랜치에서 작업·검증 및 스테이징 검토 후 진행
-# 초기 구현 브랜치: feat/phase0-bootstrap
-git add AGENTS.md README.md Lesora_plan.md docs apps packages tests infra .github compose.yaml package.json .gitignore .dockerignore .env.example .nvmrc eslint.config.mjs
-git diff --cached --stat
+git diff --cached --check
 git diff --cached
-git commit -m "Initialize Lesora Phase 0 RTC PoC"
+git commit -m "Describe the completed change"
 git push -u origin HEAD
+gh pr create --base main --draft --title "Change title" --body-file /path/to/pr-body.md
 ```
 
-의존성 설치 후 `package-lock.json`이 생성되면 검토 후 함께 추적한다. 첫 push에는 GitHub 쓰기 권한 인증이 필요하다. 비밀번호나 토큰을 문서·채팅·원격 URL에 넣지 않고 로컬 credential manager 등으로 인증한다. 이 절차는 연결/업로드 방법이며 현재 업로드가 완료되었다는 의미가 아니다.
+실제 명령의 브랜치 이름·변경 파일·본문은 작업에 맞춰 지정한다. 리뷰와 CI를 통과하고 사용자가 승인하면 squash merge한다. `main` 병합·force push·브랜치 삭제는 별도 승인 대상이며 자동 브랜치 삭제는 꺼져 있다. 자세한 흐름과 CI/CD 확장 계획은 [브랜치 전략](branching.md), 에이전트 작업 권한은 [AGENTS.md](../AGENTS.md)를 따른다.
+
+Git 인증은 로컬 keyring/GitHub CLI를 사용하고 토큰을 문서나 원격 URL에 넣지 않는다. 첫 설치 후 생성한 lockfile은 별도 검토하여 추적한다.
+
 
 ## 기본 실행
 
