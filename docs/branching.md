@@ -44,3 +44,7 @@
 5. production은 GitHub Environment 승인과 검증된 이미지 승격, 이전 이미지로 rollback하는 방식을 도입한다.
 
 현재 CD, 이미지 registry, 외부 서버 배포와 유료 리소스는 설정하지 않았다. 브랜치 전략 적용은 서비스 배포나 유료 서비스 활성화 승인이 아니다.
+
+## AI 리뷰
+
+[PR-Agent](ai-review.md)를 별도 `AI PR Review` workflow로 구성했다. 기본 dry-run, 실제 실행은 Secret과 모델 Variable 설정 후 수동으로 검증한다. 검증 후 `PR_AGENT_AUTO_REVIEW=true`로 내부 비-Draft PR의 자동 리뷰를 활성화할 수 있다. Gemini/DeepSeek/OpenAI 중 한 공급자만 선택하며 자동 fallback은 사용하지 않는다. AI 리뷰는 보조 의견이고 필수 CI나 사용자의 병합 승인을 대체하지 않는다.

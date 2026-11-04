@@ -57,5 +57,6 @@ npm run dev:web
 - [자동 녹화·저장·재시도 설계](docs/recording.md)
 - [테스트 전략·현재 검증 결과](docs/testing.md)
 - [공식 문서와 검토 근거](docs/sources.md)
+- [PR-Agent AI 리뷰 및 API Secret 설정](docs/ai-review.md)
 
 다음 작업은 의존성 설치/빌드 검증 → 양 SDK 기본 통화 → 자동 녹화 E2E 구현/검증 → 저사양·불량망 비교다. 실제 수업 또는 상용 출시 준비 완료 상태로 사용하지 않는다.
