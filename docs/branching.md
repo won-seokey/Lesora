@@ -1,0 +1,50 @@
+# Lesora 브랜치 및 PR 전략
+
+2026-11-02부터 GitHub Flow를 사용한다. 장기 유지 브랜치는 `main` 하나이며 `develop`/release 브랜치는 현재 도입하지 않는다.
+
+## 작업 흐름
+
+1. 깨끗한 작업 트리에서 `git fetch origin` 후 최신 `origin/main`을 기준으로 작업 브랜치를 생성한다.
+2. `feat/<기능>`, `fix/<문제>`, `docs/<주제>`, `chore/<유지보수>`로 목적을 구분한다. 하나의 PR에는 함께 검토할 수 있는 변경을 담는다.
+3. 구현·문서·관련 검증을 완료하고 비밀정보를 제외한 변경을 commit/push한다.
+4. `main` 대상 PR을 자동 생성하거나 기존 PR을 갱신한다. 작업 중에는 Draft, 리뷰 준비가 되면 Ready로 전환한다.
+5. 코드를 리뷰하고 지적 사항을 수정한다. 코드 리뷰 결과와 미검증 범위를 기록한다. 새 수정에는 관련 검사를 다시 수행한다.
+6. 필수 CI `check` 성공, 최신 main 반영, 리뷰 대화 해결을 확인한다.
+7. 사용자에게 구체적인 PR과 검증 결과를 제시하고 **명시적 병합 승인 후 squash merge**한다.
+8. 브랜치 삭제는 별도 승인 후 수행한다. 자동 삭제/auto-merge를 사용하지 않는다.
+
+원격 브랜치를 이미 공유한 뒤 main 변경을 반영할 때는 기본적으로 `git merge origin/main`을 사용한다. 충돌은 해당 기능 브랜치에서 해결한다. rebase로 원격 이력을 재작성하거나 force push하지 않는다. `--force-with-lease`도 별도 승인 대상이다.
+
+## 실제 GitHub 설정
+
+- 기본 브랜치: `main`
+- main 보호: PR 경유, 필수 상태 검사 `check`, 최신 main과 통합된 상태 필요
+- 관리자에게도 보호 규칙 적용
+- 리뷰 대화 해결 필수, 오래된 승인 무효화
+- main 강제 push 및 삭제 금지, 선형 이력 요구
+- 저장소 병합 방식: squash만 허용
+- 병합 후 자동 브랜치 삭제: 비활성화
+
+1인 운영에서는 작성자가 자기 PR을 승인할 수 없어 필수 승인자 수를 **0**으로 설정했다. 따라서 GitHub가 별도 사람의 승인을 강제하는 상태는 아니다. 코드 리뷰와 사용자의 병합 승인은 AGENTS.md의 필수 절차로 지킨다. 리뷰어가 추가되면 required approving reviews를 1 이상으로 올린다. 사용자 승인 후에도 보호 규칙을 우회하지 않고 정상 PR 병합 경로를 사용한다.
+
+## 초기 이력 정리
+
+처음에는 `feat/phase0-bootstrap`에 root commit만 있었고 main이 없었다. 이번 설정에서 빈 main 기준 커밋을 만든 뒤 이를 기존 기능 브랜치에 병합하여 공통 조상을 확보했다. 이 한 번의 초기화로 기존 커밋을 재작성하지 않고 초기 파일 전체를 PR diff로 검토할 수 있다. 기존 브랜치를 삭제하거나 force push하지 않았다. 초기 구현 PR을 승인·병합하기 전 main에는 앱 파일이 없는 것이 정상이다.
+
+## CI/CD 확장
+
+이미 `.github/workflows/check.yml`의 `Checks / check`가 존재한다. 초기 커밋의 실제 GitHub 실행 성공을 확인해 필수 검사로 지정했다. 현재 PR에서도 성공 여부를 별도로 확인해야 한다. CI는 테스트·HTTP 경계 검사·타입·린트·빌드·Compose 구성을 검사하며 실제 유료 RTC 통화나 녹화 성능까지 보장하지 않는다.
+
+후속 단계:
+
+1. 의존성 lockfile을 고정하고 `npm ci`로 통일한다. CI 소요 시간/중복 push·PR 실행을 최적화한다.
+2. PR에는 읽기 전용 권한을 유지하고 외부 PR에 배포 비밀정보를 전달하지 않는다.
+3. main 병합 후 버전이 고정된 Docker 이미지를 빌드·보관한다.
+4. staging 배포와 health/smoke 검사, DB migration의 호환성·복구 절차를 추가한다.
+5. production은 GitHub Environment 승인과 검증된 이미지 승격, 이전 이미지로 rollback하는 방식을 도입한다.
+
+현재 CD, 이미지 registry, 외부 서버 배포와 유료 리소스는 설정하지 않았다. 브랜치 전략 적용은 서비스 배포나 유료 서비스 활성화 승인이 아니다.
+
+## AI 리뷰
+
+[PR-Agent](ai-review.md)를 별도 `AI PR Review` workflow로 구성했다. 기본 dry-run, 실제 실행은 Secret과 모델 Variable 설정 후 수동으로 검증한다. 검증 후 `PR_AGENT_AUTO_REVIEW=true`로 내부 비-Draft PR의 자동 리뷰를 활성화할 수 있다. Gemini/DeepSeek/OpenAI 중 한 공급자만 선택하며 자동 fallback은 사용하지 않는다. AI 리뷰는 보조 의견이고 필수 CI나 사용자의 병합 승인을 대체하지 않는다.

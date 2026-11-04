@@ -1,0 +1,48 @@
+name: lesora
+services:
+  db:
+    image: postgres:17-bookworm
+    environment:
+      POSTGRES_USER: lesora
+      POSTGRES_DB: lesora
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-local-development-only}
+    ports: ["127.0.0.1:5432:5432"]
+    volumes: ["postgres_data:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lesora -d lesora"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    mem_limit: 1g
+  api:
+    profiles: [app]
+    build:
+      context: .
+      dockerfile: infra/Dockerfile
+      target: api
+    env_file: .env
+    environment:
+      HOST: 0.0.0.0
+      PORT: 4000
+    expose: ["4000"]
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:4000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    mem_limit: 512m
+  web:
+    profiles: [app]
+    build:
+      context: .
+      dockerfile: infra/Dockerfile
+      target: web
+      args:
+        API_INTERNAL_URL: http://api:4000
+    ports: ["127.0.0.1:3000:3000"]
+    depends_on:
+      api:
+        condition: service_healthy
+    mem_limit: 2g
+volumes:
+  postgres_data:

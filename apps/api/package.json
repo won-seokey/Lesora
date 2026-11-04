@@ -1,0 +1,17 @@
+{
+  "name": "@lesora/api",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "build": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "express": "5.2.1",
+    "livekit-server-sdk": "2.19.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0"
+  }
+}
